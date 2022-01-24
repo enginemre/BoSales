@@ -14,6 +14,8 @@ conn = None
 cursor = None
 failedCount = 0
 BASE_URL = "http://172.23.21.86:9996"
+firstTime = True
+token = ""
 
 storesCode = []
 #logging HTTP Requests
@@ -59,18 +61,25 @@ def getStores():
     
 #Getting token for request API
 def getToken():
-    url = BASE_URL+"/token"
-    headers = {'Content-type': 'application/json'}
-    data={ 'grant_type': 'password','username': 'kasa','password': '81dc9bdb52d04dc20036dbd8313ed055'}
-    data = json.dumps(data)
-    try:
-        response =  requests.post(url,data=data,headers=headers)
-        return response.text.replace('"', "")
-    except:
-        print("Token Alınamadı !")
+    global firstTime,token
+    #Checking  is token avaliable
+    if(firstTime):
+        url = BASE_URL+"/token"
+        headers = {'Content-type': 'application/json'}
+        data={ 'grant_type': 'password','username': 'kasa','password': '81dc9bdb52d04dc20036dbd8313ed055'}
+        data = json.dumps(data)
+        try:
+            response =  requests.post(url,data=data,headers=headers)
+            firstTime = False
+            token = response.text.replace('"', "")
+            return token
+        except:
+            print("Token Alınamadı !")
+    else:
+        return token
    
 # Getting sales from API
-def getSales(time =120):
+def getSales(time =35):
     print("Satışlar  işleniyor...")
     for item in storesCode:
         url = BASE_URL+"/api/Reports/sales"
@@ -164,3 +173,5 @@ if __name__ == "__main__":
         time = int(sys.argv[1])
         getSales(time)
     print("İşlem Tamamlandı.")
+  
+
