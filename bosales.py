@@ -116,11 +116,11 @@ def deleteTable():
     cursor.execute('DELETE FROM ENCORE_SALES')
     conn.commit()
 # Insert data from api
-def insertData(werks,posId,recieptNo,productCode,amount,total_price,vat,sequence,date):
+def insertData(werks,posId,recieptNo,productCode,amount,total_price,vat,sequence,date,isReturn):
     global failedCount
     global cursor,conn
     try:
-        cursor.execute("insert into ENCORE_SALES(WERKS, POS,INVOICE,MATERIAL,AMOUNT,TOTAL_PRICE,VAT,SEQUENCE,DATE) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", werks, posId,recieptNo, productCode,amount, total_price,vat,sequence,date)
+        cursor.execute("insert into ENCORE_SALES(WERKS, POS,INVOICE,MATERIAL,AMOUNT,TOTAL_PRICE,VAT,SEQUENCE,DATE) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", werks, posId,recieptNo, productCode,amount, total_price,vat,sequence,date,isReturn)
         conn.commit()
     except:
         failedCount = failedCount+1
@@ -149,8 +149,9 @@ def writeData(result):
             if(datas.lines != None and len(datas.lines) > 0):
                 for lines in datas.lines:
                     if(lines.is_valid):
-                        total_price = lines.total_price - lines.vat_total
-                        insertData(storeCode,posCode,invoice,lines.product_code,lines.amount,total_price,lines.vat_total,lines.sequence,date)
+                        total_price = lines.total_price - lines.vat_total,
+                        isReturn = datas.sales_type == 1 if True else False
+                        insertData(storeCode,posCode,invoice,lines.product_code,lines.amount,total_price,lines.vat_total,lines.sequence,date,isReturn)
     if(storeCode != ""):
         print(storeCode+" Mağazası aktarılıdı. "+"Başarısız kayıt sayısı:"+ str(failedCount))
     failedCount = 0
