@@ -120,7 +120,7 @@ def insertData(werks,posId,recieptNo,productCode,amount,total_price,vat,sequence
     global failedCount
     global cursor,conn
     try:
-        cursor.execute("insert into ENCORE_SALES(WERKS, POS,INVOICE,MATERIAL,AMOUNT,TOTAL_PRICE,VAT,SEQUENCE,DATE) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", werks, posId,recieptNo, productCode,amount, total_price,vat,sequence,date,isReturn)
+        cursor.execute("insert into ENCORE_SALES(WERKS, POS,INVOICE,MATERIAL,AMOUNT,TOTAL_PRICE,VAT,SEQUENCE,DATE,ISRETURN) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", werks, posId,recieptNo, productCode,amount, total_price,vat,sequence,date,isReturn)
         conn.commit()
     except:
         failedCount = failedCount+1
@@ -150,8 +150,8 @@ def writeData(result):
                 for lines in datas.lines:
                     if(lines.is_valid):
                         total_price = lines.total_price - lines.vat_total,
-                        isReturn = datas.sales_type == 1 if True else False
-                        insertData(storeCode,posCode,invoice,lines.product_code,lines.amount,total_price,lines.vat_total,lines.sequence,date,isReturn)
+                        isReturn = datas.sales_type == 1 if 1 else 0
+                        insertData(storeCode,posCode,invoice,lines.product_code,lines.amount,total_price[0],lines.vat_total,lines.sequence,date,isReturn)
     if(storeCode != ""):
         print(storeCode+" Mağazası aktarılıdı. "+"Başarısız kayıt sayısı:"+ str(failedCount))
     failedCount = 0
